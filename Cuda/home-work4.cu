@@ -10,37 +10,22 @@
 #include <iostream>
 using namespace std;
 
-__device__ int getCurrentThreadId() {
+__device__ void randomInt2(float *i, float *j) {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
-	//int blockId = (gridDim.x * blockIdx.y) + blockIdx.x;
-	//int threadId = (blockId * (blockDim.x * blockDim.y)) + (threadIdx.y * blockDim.x) + threadIdx.x;
-	return idx;
-}
-
-__device__ curandState initState() {
-	int id = getCurrentThreadId();
 	curandState state;
-	curand_init(1234, id, 0, &state);
-	return state;
-}
-
-__device__ float getRandFloat(curandState state) {
-	return curand_uniform(&state);
-}
-
-__device__ float getRandFloat() {
-	curandState state = initState();
-	return getRandFloat(state);
+	curand_init(1234, idx, 0, &state);
+	float ranv1 = curand_uniform(&state);
+	float ranv2 = curand_uniform(&state);
+	*i = ranv1 * 1;
+	*j = ranv2 * 1;
 }
 
 __global__ void monteCarlo(int* inCircle, int* inSquare)
 {
-	curandState state = initState();
+	float x, y;
+	randomInt2(&x, &y);
 
-	float x = getRandFloat(state);
-	float y = getRandFloat(state);
-
-	if (sqrt(float(x * x + y * y)) < 1) {
+	if (sqrt(float(pow(x,2) + pow(y,2))) < 1.0) {
 		atomicAdd(inCircle, 1);
 	}
 	else {
