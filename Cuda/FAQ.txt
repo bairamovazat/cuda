@@ -1,0 +1,6 @@
+cudaMalloc( void **devPtr, size_t size);			¬ыделение пам€ти;
+cudaFree( void **devPtr);							ќсвобождение пам€ти
+cudaMemcpy( void *dst, const void *src, size_t s, enumcudaMemcpyKind kind) - ¬ качестве параметра kind, задающее направление копировани€, могут выступать: cudamemcpyHostToDevice, cudamemcpyDeviceToHost, cudamemcpyDeviceToDevice, cudamemcpyHostToHost.
+__host__ Ц вызываютс€ с хоста, выполн€ютс€ на хосте (можно не указывать действует по умолчанию);
+__global__ Ц вызываютс€ с хоста, выполн€ютс€ на устройстве;
+__device__ Ц вызываютс€ с устройства, выполн€ютс€ на устройстве.									

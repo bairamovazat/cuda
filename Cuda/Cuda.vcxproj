@@ -80,17 +80,24 @@
   <ItemGroup>
     <CudaCompile Include="class-work1.cu" />
     <CudaCompile Include="class-work2.cu" />
+    <CudaCompile Include="cuda_utils.cu" />
     <CudaCompile Include="example1.cu" />
     <CudaCompile Include="home-work2.cu" />
     <CudaCompile Include="home-work3.cu" />
+    <CudaCompile Include="home-work4.cu" />
     <CudaCompile Include="kernel.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="class-work1.cuh" />
     <ClInclude Include="class-work2.cuh" />
+    <ClInclude Include="cuda_utils.cuh" />
     <ClInclude Include="example1.cuh" />
     <ClInclude Include="home-work2.cuh" />
     <ClInclude Include="home-work3.cuh" />
+    <ClInclude Include="home-work4.cuh" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="FAQ.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
