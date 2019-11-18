@@ -10,11 +10,12 @@
 #include <iostream>
 using namespace std;
 
+#define WARP_SIZE 32;
+
 __device__ int getCurrentThreadId() {
-	int idx = blockIdx.x * blockDim.x + threadIdx.x;
-	//int blockId = (gridDim.x * blockIdx.y) + blockIdx.x;
-	//int threadId = (blockId * (blockDim.x * blockDim.y)) + (threadIdx.y * blockDim.x) + threadIdx.x;
-	return idx;
+	int blockId = (gridDim.x * blockIdx.y) + blockIdx.x;
+	int threadId = (blockId * (blockDim.x * blockDim.y)) + (threadIdx.y * blockDim.x) + threadIdx.x;
+	return threadId;
 }
 
 __device__ curandState initState() {

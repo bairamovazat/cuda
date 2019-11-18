@@ -26,6 +26,7 @@ int classWork1() {
 	printf("Пиковая тактовая частота памяти в килогерцах: %d\n", deviceProp.memoryClockRate);
 	//Ширина шины глобальной памяти в битах
 	printf("Ширина шины глобальной памяти в битах: %d\n", deviceProp.memoryBusWidth);
+	printf("Размер варпа: %d\n", deviceProp.warpSize);
 
 	// переменные на CPU
 	int a, b, c;
