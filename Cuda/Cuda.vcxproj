@@ -31,7 +31,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 10.0.props" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 10.2.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -75,39 +75,45 @@
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
+      <GenerateRelocatableDeviceCode>true</GenerateRelocatableDeviceCode>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="class-work1.cu" />
-    <CudaCompile Include="class-work2.cu" />
-    <CudaCompile Include="cuda_utils.cu" />
-    <CudaCompile Include="example1.cu" />
-    <CudaCompile Include="example2.cu" />
-    <CudaCompile Include="home-work2.cu" />
-    <CudaCompile Include="home-work3.cu" />
-    <CudaCompile Include="home-work4.cu" />
+    <CudaCompile Include="class\class-work1.cu" />
+    <CudaCompile Include="class\class-work2.cu" />
+    <CudaCompile Include="class\class-work4.cu" />
+    <CudaCompile Include="class\class-work5.cu" />
+    <CudaCompile Include="home-work\home-work5.cu" />
+    <CudaCompile Include="example\example5.cu" />
+    <CudaCompile Include="utils\cuda_utils.cu" />
+    <CudaCompile Include="example\example1.cu" />
+    <CudaCompile Include="example\example2.cu" />
+    <CudaCompile Include="home-work\home-work2.cu" />
+    <CudaCompile Include="home-work\home-work3.cu" />
+    <CudaCompile Include="home-work\home-work4.cu" />
     <CudaCompile Include="kernel.cu" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="class-work1.cuh" />
-    <ClInclude Include="class-work2.cuh" />
-    <ClInclude Include="config-reader.h" />
-    <ClInclude Include="cuda_utils.cuh" />
-    <ClInclude Include="example1.cuh" />
-    <ClInclude Include="example2.cuh" />
-    <ClInclude Include="home-work2.cuh" />
-    <ClInclude Include="home-work3.cuh" />
-    <ClInclude Include="home-work4.cuh" />
+    <ClInclude Include="class\class-work1.cuh" />
+    <ClInclude Include="class\class-work2.cuh" />
+    <ClInclude Include="class\class-work4.cuh" />
+    <ClInclude Include="class\class-work5.cuh" />
+    <ClInclude Include="home-work\home-work5.cuh" />
+    <ClInclude Include="example\example5.cuh" />
+    <ClInclude Include="models\Vector.h" />
+    <ClInclude Include="utils\cuda_utils.cuh" />
+    <ClInclude Include="example\example1.cuh" />
+    <ClInclude Include="example\example2.cuh" />
+    <ClInclude Include="home-work\home-work2.cuh" />
+    <ClInclude Include="home-work\home-work3.cuh" />
+    <ClInclude Include="home-work\home-work4.cuh" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="config.ini" />
     <Text Include="FAQ.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="config-reader.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 10.0.targets" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 10.2.targets" />
   </ImportGroup>
 </Project>

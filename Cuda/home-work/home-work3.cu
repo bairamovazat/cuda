@@ -12,6 +12,7 @@ using namespace std;
 #define N 1000
 #define S 2
 #define BLOCK_SIZE 1
+
 __global__ void zeta(float* c)
 {
 	int tid = threadIdx.x;

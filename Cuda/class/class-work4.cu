@@ -8,31 +8,9 @@
 #include <iomanip>
 #include <time.h>
 #include <iostream>
+#include "../utils/cuda_utils.cuh"
+
 using namespace std;
-
-#define WARP_SIZE 32;
-
-__device__ int getCurrentThreadId() {
-	int blockId = (gridDim.x * blockIdx.y) + blockIdx.x;
-	int threadId = (blockId * (blockDim.x * blockDim.y)) + (threadIdx.y * blockDim.x) + threadIdx.x;
-	return threadId;
-}
-
-__device__ curandState initState() {
-	int id = getCurrentThreadId();
-	curandState state;
-	curand_init(1234, id, 0, &state);
-	return state;
-}
-
-__device__ float getRandFloat(curandState *state) {
-	return curand_uniform(state);
-}
-
-__device__ float getRandFloat() {
-	curandState state = initState();
-	return getRandFloat(&state);
-}
 
 __global__ void monteCarlo(int* inCircle, int* inSquare)
 {
@@ -49,13 +27,15 @@ __global__ void monteCarlo(int* inCircle, int* inSquare)
 	}
 }
 
-int homeWork4() {
-	dim3 gridSize(300);
-	dim3 blockSize(50);
+int classWork4() {
+	dim3 gridSize(1024);
+	dim3 blockSize(2048);
+
 	int hostInCircle = 0;
 	int hostInSquare = 0;
-	int *deviceInCircle;
-	int *deviceInSquare;
+
+	int * deviceInCircle;
+	int * deviceInSquare;
 
 	cudaEvent_t start, stop;
 	cudaEventCreate(&start);
@@ -66,7 +46,7 @@ int homeWork4() {
 
 	cudaEventRecord(start, 0);
 
-	monteCarlo << <300, 200 >> > (deviceInCircle, deviceInSquare);
+	monteCarlo << <gridSize, blockSize >> > (deviceInCircle, deviceInSquare);
 
 	cudaEventRecord(stop, 0);
 	cudaEventSynchronize(stop);
@@ -74,13 +54,24 @@ int homeWork4() {
 	cudaMemcpy(&hostInCircle, deviceInCircle, sizeof(int), cudaMemcpyDeviceToHost);
 	cudaMemcpy(&hostInSquare, deviceInSquare, sizeof(int), cudaMemcpyDeviceToHost);
 
-	printf("hostInCircle: %d\n", hostInCircle);
-	printf("hostInSquare: %d\n", hostInSquare);
 
 	float pi = (4 * float(hostInCircle) / (float(hostInSquare) + float(hostInCircle)));
-	printf("%f\n", pi);
+
+	printf("Pi: %f\n", pi);
+	
+	float error = abs(4 * atan(1) - pi);
+	printf("\nError: %f\n", error);
+
+
+	float KernelTime;
+	cudaEventElapsedTime(&KernelTime, start, stop);
+	printf("KernelTime: %f millseconds\n", KernelTime);
+
 	cudaError_t err = cudaGetLastError();
 	if (err != cudaSuccess) printf("%s ", cudaGetErrorString(err));
+
+	cudaFree(deviceInCircle);
+	cudaFree(deviceInSquare);
 
 	cudaEventDestroy(start);
 	cudaEventDestroy(stop);
