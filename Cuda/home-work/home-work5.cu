@@ -16,23 +16,32 @@ using namespace std;
 #define BASE_TYPE float
 #define M_PI 3.141592653
 
-//Записывает в элемент targer[index] данные из (source[index] * coeff)
-__device__ int appendToVector(double* targer, double* source, double coeff, int index) {
+////Записывает в элемент targer[index] данные из (source[index] * coeff)
+//__device__ int appendToVector(double* targer, double* source, double coeff, int index) {
+//
+//}
+//
+////Записывает в строку targer данные из (source * coeff)
+//__device__ int appendToVector(double* targer, double* source, double coeff, int vectorLength) {
+//	//Потенциально можно сделать через потоки
+//}
 
+__device__ double multiple(double* first, double* second, size_t length) {
+	double result = 0;
+	for (int i = 0; i < length; i++) {
+		result += (*(first + i) * *(second + i));
+	}
+
+	return result;	
 }
-
-//Записывает в строку targer данные из (source * coeff)
-__device__ int appendToVector(double* targer, double* source, double coeff, int vectorLength) {
-	//Потенциально можно сделать через потоки
-}
-
 __device__ int getElementNumber(size_t row, size_t column, size_t columns) {
 	return row * columns + column;
 }
 
-__device__ void orthogonalization(double* hostDataDouble, size_t rows, size_t columns) {
+__device__ void orthogonalization(double* matrix, double* resultMatrix, size_t rows, size_t columns) {
 	int row = threadIdx.x;
 	int column = threadIdx.y;
+	return;
 }
 
 int homeWork5() {

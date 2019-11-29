@@ -9,7 +9,7 @@
 #include <curand_kernel.h>
 
 //Вычисляет уникальный идентификатор треда во всей сетке
-__device__ unsigned long long getCurrentThreadId() {
+__device__ int getCurrentThreadId() {
 	const unsigned long long int blockId = blockIdx.x + blockIdx.y * gridDim.x + gridDim.x * gridDim.y * blockIdx.z; 
 
 	const unsigned long long int threadId = blockId * blockDim.x + threadIdx.x;
