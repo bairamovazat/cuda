@@ -9,6 +9,8 @@
 #include "home-work\home-work2.cuh"
 #include "home-work\home-work3.cuh"
 #include "home-work\home-work4.cuh"
+#include "home-work\home-work5.cuh"
+
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
@@ -50,6 +52,9 @@ int main()
 		}
 		else if (prograNumber == 4) {
 			homeWork4();
+		}
+		else if (prograNumber == 5) {
+			homeWork5();
 		}
 	}
 	else if (type == "example") {

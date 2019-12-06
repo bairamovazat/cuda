@@ -16,54 +16,136 @@ using namespace std;
 #define BASE_TYPE float
 #define M_PI 3.141592653
 
-////Записывает в элемент targer[index] данные из (source[index] * coeff)
-//__device__ int appendToVector(double* targer, double* source, double coeff, int index) {
-//
-//}
-//
-////Записывает в строку targer данные из (source * coeff)
-//__device__ int appendToVector(double* targer, double* source, double coeff, int vectorLength) {
-//	//Потенциально можно сделать через потоки
-//}
-
-__device__ double multiple(double* first, double* second, size_t length) {
-	double result = 0;
-	for (int i = 0; i < length; i++) {
-		result += (*(first + i) * *(second + i));
+__global__ void calculateVector(int row, float* sourceAMatrix, float* targetBMatrix, float* buffetProjMatrix, int rows, int columns) {
+	int vectorNumber = threadIdx.x;
+	int vectorElement = threadIdx.y;
+	float* nVector = targetBMatrix + (row * columns);
+	float* aVector = sourceAMatrix + (row * columns);
+	if (vectorNumber == 0) {
+		atomicAdd(nVector + vectorElement, *(aVector + vectorElement));
+	}
+	else if (vectorNumber > row) {
+		//Ничего не делаем, дальше элементы не считаем
+	}
+	else {
+		atomicAdd(nVector + vectorElement, (*(aVector + vectorElement) * *(buffetProjMatrix + vectorElement) / *(buffetProjMatrix + columns + vectorElement)));
 	}
 
-	return result;	
-}
-__device__ int getElementNumber(size_t row, size_t column, size_t columns) {
-	return row * columns + column;
 }
 
-__device__ void orthogonalization(double* matrix, double* resultMatrix, size_t rows, size_t columns) {
-	int row = threadIdx.x;
-	int column = threadIdx.y;
+__global__ void calculateProj(int row, float* sourceAMatrix, float* targetBMatrix, float* buffetProjMatrix, int rows, int columns) {
+	int bVectorIndex = threadIdx.x - 1;
+	int vectorElement = threadIdx.y;
+	//Если 0, то верхнее <a,b>
+	//Если 1, то нижнее  <b,b>
+	int lowerExpr = blockIdx.x;
+
+	float* target = buffetProjMatrix + (columns * lowerExpr) + (bVectorIndex + 1);
+
+	float* result = 0;
+
+	//Если это нулевой элемент proj(b-1,a_row)
+	if (bVectorIndex == -1)
+	{
+		atomicAdd(target, *(sourceAMatrix + (row * columns) + vectorElement));
+	}
+	else if (bVectorIndex >= row) {
+		//Ничего не делаем, дальше элементы не считаем
+	}
+	else {
+		float* vectorA;
+
+		if (lowerExpr == 1) {
+			vectorA = targetBMatrix + (bVectorIndex * columns);
+		}
+		else {
+			vectorA = sourceAMatrix + (row * columns);
+		}
+
+		float* vectorB = targetBMatrix + (bVectorIndex * columns);
+
+		atomicAdd(target, (*(vectorB + vectorElement) * *(vectorA + vectorElement)));
+	}
+
 	return;
 }
 
-int homeWork5() {
-	size_t rows = 5;
-	size_t columns = 5;
+void printMatrix(float* matrix, int rows, int columns) {
+	for (int row = 0; row < rows; row++) {
+		for (int column = 0; column < columns; column++) {
+			cout << *(matrix + (row * columns) + column) << ", ";
+		}
+		cout << endl;
+	}
+}
 
-	dim3 gridSize(64, 64);
-	dim3 blockSize(16);
+void fillMatrix(float* matrix, int rows, int columns, bool allZero, bool upperTreangle) {
+	for (int row = 0; row < rows; row++) {
+		for (int column = 0; column < columns; column++) {
+			if (upperTreangle && row <= column) {
+				*(matrix + (row * columns) + column) = 1.0;
+			}
+			else if(upperTreangle && row < column || allZero) {
+				*(matrix + (row * columns) + column) = 0.0;
+			}
+		}
+		cout << endl;
+	}
+}
+
+int homeWork5() {
+	size_t rows = 3;
+	size_t columns = 3;
+
+	dim3 gridSize(2);
+	dim3 blockSize(rows, columns);
 
 	int elementCount = rows * columns;
 
-	double* hostDataDouble = new double[elementCount];
-	double* deviceDataDouble;
+	float* sourceAMatrix = new float[elementCount];
 
-	cudaMalloc((void**)&deviceDataDouble, elementCount * sizeof(double));
+	fillMatrix(sourceAMatrix, rows, columns, true, false);
+	printMatrix(sourceAMatrix, rows, columns);
+	cout << "--------------------------" << endl;
+	fillMatrix(sourceAMatrix, rows, columns, false, true);
+	printMatrix(sourceAMatrix, rows, columns);
 
+	float* deviceSourceAMatrix;
+	cudaMalloc((void**)&deviceSourceAMatrix, elementCount * sizeof(float));
 
+	float* targetBMatrix = new float[elementCount];
+	fillMatrix(targetBMatrix, rows, columns, true, false);
+	float* deviceTargetBMatrix;
+	cudaMalloc((void**)&deviceTargetBMatrix, elementCount * sizeof(float));
 
-	cudaFree(deviceDataDouble);
-	delete[] hostDataDouble;
+	float* buffetProjMatrix = new float[columns * 2];
+	fillMatrix(targetBMatrix, 2, columns, true, false);
+	float* deviceBuffetProjMatrix;
+	cudaMalloc((void**)&deviceBuffetProjMatrix, columns * 2 * sizeof(float));
 
+	for (int i = 0; i < rows; i++) {
+		calculateProj << <rows, columns >> > (i, deviceSourceAMatrix, deviceTargetBMatrix, deviceBuffetProjMatrix, rows, columns);
+		cudaDeviceSynchronize();
+		calculateVector << <rows, columns >> > (i, deviceSourceAMatrix, deviceTargetBMatrix, deviceBuffetProjMatrix, rows, columns);
 
+		cudaMemcpy(buffetProjMatrix, deviceBuffetProjMatrix, columns * 2 * sizeof(float), cudaMemcpyDeviceToHost);
+		printMatrix(buffetProjMatrix, 2, columns);
+	}
+
+	cudaMemcpy(targetBMatrix, deviceTargetBMatrix, elementCount * sizeof(float), cudaMemcpyDeviceToHost);
+
+	printMatrix(targetBMatrix, rows, columns);
+
+	cudaFree(deviceSourceAMatrix);
+	cudaFree(deviceTargetBMatrix);
+	cudaFree(deviceBuffetProjMatrix);
+
+	delete[] sourceAMatrix;
+	delete[] targetBMatrix;
+	delete[] buffetProjMatrix;
+
+	cudaError_t err = cudaGetLastError();
+	if (err != cudaSuccess) printf("%s ", cudaGetErrorString(err));
 
 	return 0;
 }
