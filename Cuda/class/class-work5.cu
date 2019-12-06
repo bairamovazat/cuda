@@ -10,6 +10,7 @@
 #include <iostream>
 #include "../utils/cuda_utils.cuh"
 #include <cmath>
+#include <math_functions.h>
 
 using namespace std;
 
@@ -17,7 +18,23 @@ using namespace std;
 #define M_PI 3.141592653
 
 template <typename T>
-__global__ void sinMass2(T* A, int arraySize)
+__global__ void sinOfDouble(T* A, int arraySize)
+{
+	int index = getCurrentThreadId();
+
+	*(A + index) = sin((index % 360) * M_PI / 180);
+}
+
+template <typename T>
+float sinOfDoubleError(int index, T* hostData, int arraySize)
+{
+	return abs(sin((index % 360) * M_PI / 180) - *(hostData + index));
+}
+
+//---------------------------------------------------------------------//
+
+template <typename T>
+__global__ void sinOfFloat(T* A, int arraySize)
 {
 	int index = getCurrentThreadId();
 
@@ -25,13 +42,32 @@ __global__ void sinMass2(T* A, int arraySize)
 }
 
 template <typename T>
-float sinMass2Error(int index, T* hostData, int arraySize)
+float sinOfFloatError(int index, T* hostData, int arraySize)
 {
-	return abs(sin((index % 360) * M_PI / 180) - *(hostData + index));
+	return abs(sinf((index % 360) * M_PI / 180) - *(hostData + index));
+}
+
+//---------------------------------------------------------------------//
+
+template <typename T>
+__global__ void expOfDouble(T* A, int arraySize)
+{
+	int index = getCurrentThreadId();
+	int maxNumber = 5;
+	*(A + index) = exp((double)((index - (arraySize / 2)) % maxNumber));
 }
 
 template <typename T>
-__global__ void expMass(T* A, int arraySize)
+float expOfDoubleError(int index, T* hostData, int arraySize)
+{
+	int maxNumber = 5;
+	return abs(exp((double)((index - (arraySize / 2)) % 5)) - *(hostData + index));
+}
+
+//---------------------------------------------------------------------//
+
+template <typename T>
+__global__ void expOfFloat(T* A, int arraySize)
 {
 	int index = getCurrentThreadId();
 	int maxNumber = 5;
@@ -39,25 +75,13 @@ __global__ void expMass(T* A, int arraySize)
 }
 
 template <typename T>
-float expMassError(int index, T* hostData, int arraySize)
+float expOfFloatError(int index, T* hostData, int arraySize)
 {
 	int maxNumber = 5;
 	return abs(expf((index - (arraySize / 2)) % 5) - *(hostData + index));
 }
 
-//__global__ void exp10fMass(BASE_TYPE* A, int arraySize)
-//{
-//	int index = getCurrentThreadId();
-//
-//	*(A + index) = __exp10f((index - (arraySize / 2)));
-//}
-//
-//float exp10fMassError(int index, BASE_TYPE* hostData, int arraySize)
-//{
-//	return abs(exp10f(index - (arraySize / 2)));
-//}
-
-
+//---------------------------------------------------------------------//
 template <typename T>
 void testFunction(dim3* gridSize, dim3* blockSize, int* elementCount, T* deviceData, T* hostData, void (*func)(T*, int), float (*errorFunc)(int, T*, int)) {
 	//------sinus test-------//
@@ -97,7 +121,7 @@ void testFunction(dim3* gridSize, dim3* blockSize, int* elementCount, T* deviceD
 }
 int classWork5() {
 	dim3 gridSize(64, 64);
-	dim3 blockSize(16);
+	dim3 blockSize(128);
 
 	int elementCount = gridSize.x * gridSize.y * gridSize.z * blockSize.x * blockSize.y * blockSize.z;
 	std::cout << "/////////////////////////////////////" << endl;
@@ -112,16 +136,16 @@ int classWork5() {
 	void (*funcDouble)(double* array, int size);
 	float (*errorFuncDouble)(int, double*, int);
 
-	funcDouble = sinMass2;
-	errorFuncDouble = sinMass2Error;
+	funcDouble = sinOfDouble;
+	errorFuncDouble = sinOfDoubleError;
 	std::cout << "----------Тестирование синуса----------" << endl;
 	testFunction<double>(&gridSize, &blockSize, &elementCount, deviceDataDouble, hostDataDouble, funcDouble, errorFuncDouble);
 	std::cout << "---------------------------------------" << endl << endl;
 
 	cudaDeviceSynchronize();
 
-	funcDouble = expMass;
-	errorFuncDouble = expMassError;
+	funcDouble = expOfDouble;
+	errorFuncDouble = expOfDoubleError;
 	std::cout << "-----------Тестирование expr-----------" << endl;
 	testFunction<double>(&gridSize, &blockSize, &elementCount, deviceDataDouble, hostDataDouble, funcDouble, errorFuncDouble);
 	std::cout << "---------------------------------------" << endl << endl;
@@ -153,16 +177,16 @@ int classWork5() {
 	void (*funcFloat)(float* array, int size);
 	float (*errorFuncFloat)(int, float*, int);
 
-	funcFloat = sinMass2;
-	errorFuncFloat = sinMass2Error;
+	funcFloat = sinOfFloat;
+	errorFuncFloat = sinOfFloatError;
 	std::cout << "----------Тестирование синуса----------" << endl;
 	testFunction<float>(&gridSize, &blockSize, &elementCount, deviceDataFloat, hostDataFloat, funcFloat, errorFuncFloat);
 	std::cout << "---------------------------------------" << endl << endl;
 
 	cudaDeviceSynchronize();
 
-	funcFloat = expMass;
-	errorFuncFloat = expMassError;
+	funcFloat = expOfFloat;
+	errorFuncFloat = expOfDoubleError;
 	std::cout << "-----------Тестирование expr-----------" << endl;
 	testFunction<float>(&gridSize, &blockSize, &elementCount, deviceDataFloat, hostDataFloat, funcFloat, errorFuncFloat);
 	std::cout << "---------------------------------------" << endl << endl;
