@@ -12,7 +12,7 @@
 
 using namespace std;
 
-__global__ void monteCarlo(int* inCircle, int* inSquare)
+__global__ void monteCarlo(int* inCircle)
 {
 	curandState state = initState();
 
@@ -22,40 +22,33 @@ __global__ void monteCarlo(int* inCircle, int* inSquare)
 	if (sqrt(float(pow(x,2) + pow(y,2))) < 1) {
 		atomicAdd(inCircle, 1);
 	}
-	else {
-		atomicAdd(inSquare, 1);
-	}
 }
 
 int classWork4() {
-	dim3 gridSize(1024);
-	dim3 blockSize(2048);
+	dim3 gridSize(256);
+	dim3 blockSize(256);
 
 	int hostInCircle = 0;
-	int hostInSquare = 0;
-
+	int hostInSquare = gridSize.x * gridSize.y * gridSize.z * blockSize.x * blockSize.y * blockSize.z;
 	int * deviceInCircle;
-	int * deviceInSquare;
 
 	cudaEvent_t start, stop;
 	cudaEventCreate(&start);
 	cudaEventCreate(&stop);
 
 	cudaMalloc((void**)& deviceInCircle, sizeof(int));
-	cudaMalloc((void**)& deviceInSquare, sizeof(int));
 
 	cudaEventRecord(start, 0);
 
-	monteCarlo << <gridSize, blockSize >> > (deviceInCircle, deviceInSquare);
+	monteCarlo << <gridSize, blockSize >> > (deviceInCircle);
 
 	cudaEventRecord(stop, 0);
 	cudaEventSynchronize(stop);
 
 	cudaMemcpy(&hostInCircle, deviceInCircle, sizeof(int), cudaMemcpyDeviceToHost);
-	cudaMemcpy(&hostInSquare, deviceInSquare, sizeof(int), cudaMemcpyDeviceToHost);
 
 
-	float pi = (4 * float(hostInCircle) / (float(hostInSquare) + float(hostInCircle)));
+	float pi = (4 * float(hostInCircle) / float(hostInSquare));
 
 	printf("Pi: %f\n", pi);
 	
@@ -71,7 +64,6 @@ int classWork4() {
 	if (err != cudaSuccess) printf("%s ", cudaGetErrorString(err));
 
 	cudaFree(deviceInCircle);
-	cudaFree(deviceInSquare);
 
 	cudaEventDestroy(start);
 	cudaEventDestroy(stop);

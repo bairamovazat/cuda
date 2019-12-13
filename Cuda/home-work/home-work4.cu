@@ -12,7 +12,7 @@
 
 using namespace std;
 
-__global__ void monteCarlo(int* inCircle, int* inSquare, int maxSize)
+__global__ void monteCarlo(int* inCircle, int maxSize)
 {
 	curandState state = initState();
 
@@ -22,50 +22,42 @@ __global__ void monteCarlo(int* inCircle, int* inSquare, int maxSize)
 	if (sqrt(float(pow(x,2) + pow(y,2))) < 1) {
 		atomicAdd((inCircle + (getCurrentThreadNumber())), 1);
 	}
-	else {
-		atomicAdd((inSquare + (getCurrentThreadNumber())), 1);
-	}
 }
 
 int homeWork4() {
-	dim3 gridSize(400);
-	dim3 blockSize(1024);
+	dim3 gridSize(256);
+	dim3 blockSize(256);
 
 	int threadsCount = blockSize.x * blockSize.y * blockSize.z;
 
 	int * hostInCircle = new int[threadsCount];
-	int * hostInSquare = new int[threadsCount];
+
+	int hostInSquare = gridSize.x * gridSize.y * gridSize.z * blockSize.x * blockSize.y * blockSize.z;
 
 	int * deviceInCircle;
-	int * deviceInSquare;
 
 	cudaEvent_t start, stop;
 	cudaEventCreate(&start);
 	cudaEventCreate(&stop);
 
 	cudaMalloc((void**)& deviceInCircle, threadsCount * sizeof(int));
-	cudaMalloc((void**)& deviceInSquare, threadsCount * sizeof(int));
 
 	cudaEventRecord(start, 0);
 
-	monteCarlo << <gridSize, blockSize >> > (deviceInCircle, deviceInSquare, threadsCount);
+	monteCarlo << <gridSize, blockSize >> > (deviceInCircle, threadsCount);
 
 	cudaEventRecord(stop, 0);
 	cudaEventSynchronize(stop);
 
 	cudaMemcpy(hostInCircle, deviceInCircle, threadsCount * sizeof(int), cudaMemcpyDeviceToHost);
-	cudaMemcpy(hostInSquare, deviceInSquare, threadsCount * sizeof(int), cudaMemcpyDeviceToHost);
-
 
 	int hostInCircleTotal = 0;
-	int hostInSquareTotal = 0;
 
 	for (int i = 0; i < threadsCount; i++) {
 		hostInCircleTotal += *(hostInCircle + i);
-		hostInSquareTotal += *(hostInSquare + i);
 	}
 
-	float pi = (4 * float(hostInCircleTotal) / (float(hostInSquareTotal) + float(hostInCircleTotal)));
+	float pi = (4 * float(hostInCircleTotal) / float(hostInSquare));
 
 	printf("Pi: %f\n", pi);
 
@@ -80,7 +72,6 @@ int homeWork4() {
 	if (err != cudaSuccess) printf("%s ", cudaGetErrorString(err));
 
 	cudaFree(deviceInCircle);
-	cudaFree(deviceInSquare);
 
 	cudaEventDestroy(start);
 	cudaEventDestroy(stop);

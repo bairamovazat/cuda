@@ -19,16 +19,19 @@ using namespace std;
 __global__ void calculateVector(int row, float* sourceAMatrix, float* targetBMatrix, float* buffetProjMatrix, int rows, int columns) {
 	int vectorNumber = threadIdx.x;
 	int vectorElement = threadIdx.y;
-	float* nVector = targetBMatrix + (row * columns);
+	float* bVector = targetBMatrix + (row * columns);
 	float* aVector = sourceAMatrix + (row * columns);
 	if (vectorNumber == 0) {
-		atomicAdd(nVector + vectorElement, *(aVector + vectorElement));
+		atomicAdd(bVector + vectorElement, *(aVector + vectorElement));
 	}
 	else if (vectorNumber > row) {
 		//Ничего не делаем, дальше элементы не считаем
 	}
 	else {
-		atomicAdd(nVector + vectorElement, (*(aVector + vectorElement) * *(buffetProjMatrix + vectorElement) / *(buffetProjMatrix + columns + vectorElement)));
+		float upper = *(buffetProjMatrix + vectorNumber);
+		float lower = *(buffetProjMatrix + columns + vectorNumber);
+		printf("Upper: %f, Lower: %f, %d, %d, %d\n", upper, lower, row, vectorNumber, vectorElement);
+		atomicAdd(bVector + vectorElement, (*(aVector + vectorElement) * -upper / lower));
 	}
 
 }
@@ -47,7 +50,7 @@ __global__ void calculateProj(int row, float* sourceAMatrix, float* targetBMatri
 	//Если это нулевой элемент proj(b-1,a_row)
 	if (bVectorIndex == -1)
 	{
-		atomicAdd(target, *(sourceAMatrix + (row * columns) + vectorElement));
+		//atomicAdd(target, *(sourceAMatrix + (row * columns) + vectorElement));
 	}
 	else if (bVectorIndex >= row) {
 		//Ничего не делаем, дальше элементы не считаем
@@ -89,7 +92,6 @@ void fillMatrix(float* matrix, int rows, int columns, bool allZero, bool upperTr
 				*(matrix + (row * columns) + column) = 0.0;
 			}
 		}
-		cout << endl;
 	}
 }
 
@@ -97,7 +99,9 @@ int homeWork5() {
 	size_t rows = 3;
 	size_t columns = 3;
 
-	dim3 gridSize(2);
+	dim3 gridSizeProj(2);
+	dim3 gridSize(1);
+
 	dim3 blockSize(rows, columns);
 
 	int elementCount = rows * columns;
@@ -109,6 +113,7 @@ int homeWork5() {
 	cout << "--------------------------" << endl;
 	fillMatrix(sourceAMatrix, rows, columns, false, true);
 	printMatrix(sourceAMatrix, rows, columns);
+	cout << "--------------------------" << endl;
 
 	float* deviceSourceAMatrix;
 	cudaMalloc((void**)&deviceSourceAMatrix, elementCount * sizeof(float));
@@ -123,13 +128,24 @@ int homeWork5() {
 	float* deviceBuffetProjMatrix;
 	cudaMalloc((void**)&deviceBuffetProjMatrix, columns * 2 * sizeof(float));
 
-	for (int i = 0; i < rows; i++) {
-		calculateProj << <rows, columns >> > (i, deviceSourceAMatrix, deviceTargetBMatrix, deviceBuffetProjMatrix, rows, columns);
-		cudaDeviceSynchronize();
-		calculateVector << <rows, columns >> > (i, deviceSourceAMatrix, deviceTargetBMatrix, deviceBuffetProjMatrix, rows, columns);
+	float* buffetProjMatrixToPrint = new float[columns * 2];
 
-		cudaMemcpy(buffetProjMatrix, deviceBuffetProjMatrix, columns * 2 * sizeof(float), cudaMemcpyDeviceToHost);
-		printMatrix(buffetProjMatrix, 2, columns);
+	cudaMemcpy(deviceSourceAMatrix, sourceAMatrix, elementCount * sizeof(float), cudaMemcpyHostToDevice);
+
+	for (int i = 0; i < rows; i++) {
+		cudaMemcpy(deviceBuffetProjMatrix, buffetProjMatrix, columns * 2 * sizeof(float), cudaMemcpyHostToDevice);
+
+		calculateProj << <gridSizeProj, blockSize >> > (i, deviceSourceAMatrix, deviceTargetBMatrix, deviceBuffetProjMatrix, rows, columns);
+		cudaDeviceSynchronize();
+		calculateVector << <gridSize, blockSize >> > (i, deviceSourceAMatrix, deviceTargetBMatrix, deviceBuffetProjMatrix, rows, columns);
+
+		cudaMemcpy(buffetProjMatrixToPrint, deviceBuffetProjMatrix, 2 * columns * sizeof(float), cudaMemcpyDeviceToHost);
+		printMatrix(buffetProjMatrixToPrint, 2, columns);
+		cout << "--------------------------" << endl;
+		cudaMemcpy(targetBMatrix, deviceTargetBMatrix, elementCount * sizeof(float), cudaMemcpyDeviceToHost);
+		printMatrix(targetBMatrix, rows, columns);
+		cout << "--------------------------" << endl;
+
 	}
 
 	cudaMemcpy(targetBMatrix, deviceTargetBMatrix, elementCount * sizeof(float), cudaMemcpyDeviceToHost);
