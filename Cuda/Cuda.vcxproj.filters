@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CudaCompile Include="kernel.cu" />
+    <CudaCompile Include="class\class-work1.cu">
+      <Filter>class</Filter>
+    </CudaCompile>
+    <CudaCompile Include="class\class-work2.cu">
+      <Filter>class</Filter>
+    </CudaCompile>
+    <CudaCompile Include="class\class-work4.cu">
+      <Filter>class</Filter>
+    </CudaCompile>
+    <CudaCompile Include="class\class-work5.cu">
+      <Filter>class</Filter>
+    </CudaCompile>
+    <CudaCompile Include="home-work\home-work2.cu">
+      <Filter>home</Filter>
+    </CudaCompile>
+    <CudaCompile Include="home-work\home-work3.cu">
+      <Filter>home</Filter>
+    </CudaCompile>
+    <CudaCompile Include="home-work\home-work4.cu">
+      <Filter>home</Filter>
+    </CudaCompile>
+    <CudaCompile Include="home-work\home-work5.cu">
+      <Filter>home</Filter>
+    </CudaCompile>
+    <CudaCompile Include="home-work\home-work6.cu">
+      <Filter>home</Filter>
+    </CudaCompile>
+    <CudaCompile Include="utils\cuda_utils.cu">
+      <Filter>utils</Filter>
+    </CudaCompile>
+    <CudaCompile Include="example\example1.cu">
+      <Filter>example</Filter>
+    </CudaCompile>
+    <CudaCompile Include="example\example2.cu">
+      <Filter>example</Filter>
+    </CudaCompile>
+    <CudaCompile Include="example\example5.cu">
+      <Filter>example</Filter>
+    </CudaCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="class\class-work1.cuh">
+      <Filter>class</Filter>
+    </ClInclude>
+    <ClInclude Include="class\class-work2.cuh">
+      <Filter>class</Filter>
+    </ClInclude>
+    <ClInclude Include="class\class-work4.cuh">
+      <Filter>class</Filter>
+    </ClInclude>
+    <ClInclude Include="class\class-work5.cuh">
+      <Filter>class</Filter>
+    </ClInclude>
+    <ClInclude Include="home-work\home-work2.cuh">
+      <Filter>home</Filter>
+    </ClInclude>
+    <ClInclude Include="home-work\home-work3.cuh">
+      <Filter>home</Filter>
+    </ClInclude>
+    <ClInclude Include="home-work\home-work4.cuh">
+      <Filter>home</Filter>
+    </ClInclude>
+    <ClInclude Include="home-work\home-work5.cuh">
+      <Filter>home</Filter>
+    </ClInclude>
+    <ClInclude Include="home-work\home-work6.cuh">
+      <Filter>home</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\cuda_utils.cuh">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="example\example1.cuh">
+      <Filter>example</Filter>
+    </ClInclude>
+    <ClInclude Include="example\example2.cuh">
+      <Filter>example</Filter>
+    </ClInclude>
+    <ClInclude Include="example\example5.cuh">
+      <Filter>example</Filter>
+    </ClInclude>
+    <ClInclude Include="models\Vector.h">
+      <Filter>model</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="config.ini" />
+    <Text Include="FAQ.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="class">
+      <UniqueIdentifier>{cbfb963d-14dd-4458-a5a5-df1b9bd24b06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="home">
+      <UniqueIdentifier>{0b86092d-781d-49a1-a4e1-d3dfb3efc95c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{8845f4e6-2306-4451-9fb3-0afb92594118}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="example">
+      <UniqueIdentifier>{3338a447-cb32-4163-8a5e-849796e0e823}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="model">
+      <UniqueIdentifier>{292d6dd9-7187-41b6-8584-c9b9876e06a2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
+  </ItemGroup>
+</Project>

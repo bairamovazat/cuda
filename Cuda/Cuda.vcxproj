@@ -65,6 +65,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;WIN64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -83,14 +84,15 @@
     <CudaCompile Include="class\class-work2.cu" />
     <CudaCompile Include="class\class-work4.cu" />
     <CudaCompile Include="class\class-work5.cu" />
-    <CudaCompile Include="home-work\home-work5.cu" />
-    <CudaCompile Include="example\example5.cu" />
     <CudaCompile Include="utils\cuda_utils.cu" />
+    <CudaCompile Include="example\example5.cu" />
     <CudaCompile Include="example\example1.cu" />
     <CudaCompile Include="example\example2.cu" />
     <CudaCompile Include="home-work\home-work2.cu" />
     <CudaCompile Include="home-work\home-work3.cu" />
     <CudaCompile Include="home-work\home-work4.cu" />
+    <CudaCompile Include="home-work\home-work5.cu" />
+    <CudaCompile Include="home-work\home-work6.cu" />
     <CudaCompile Include="kernel.cu" />
   </ItemGroup>
   <ItemGroup>
@@ -98,19 +100,23 @@
     <ClInclude Include="class\class-work2.cuh" />
     <ClInclude Include="class\class-work4.cuh" />
     <ClInclude Include="class\class-work5.cuh" />
-    <ClInclude Include="home-work\home-work5.cuh" />
-    <ClInclude Include="example\example5.cuh" />
-    <ClInclude Include="models\Vector.h" />
     <ClInclude Include="utils\cuda_utils.cuh" />
+    <ClInclude Include="example\example5.cuh" />
     <ClInclude Include="example\example1.cuh" />
     <ClInclude Include="example\example2.cuh" />
     <ClInclude Include="home-work\home-work2.cuh" />
     <ClInclude Include="home-work\home-work3.cuh" />
     <ClInclude Include="home-work\home-work4.cuh" />
+    <ClInclude Include="home-work\home-work5.cuh" />
+    <ClInclude Include="home-work\home-work6.cuh" />
+    <ClInclude Include="models\Vector.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="config.ini" />
     <Text Include="FAQ.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
