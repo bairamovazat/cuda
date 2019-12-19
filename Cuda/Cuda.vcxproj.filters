@@ -41,6 +41,9 @@
     <CudaCompile Include="example\example5.cu">
       <Filter>example</Filter>
     </CudaCompile>
+    <CudaCompile Include="home-work\home-work7.cu">
+      <Filter>home</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="class\class-work1.cuh">
@@ -84,6 +87,9 @@
     </ClInclude>
     <ClInclude Include="models\Vector.h">
       <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="home-work\home-work7.cuh">
+      <Filter>home</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -17,14 +17,14 @@ using namespace std;
 #define BASE_TYPE float
 #define M_PI 3.141592653
 
-__global__ void deviceMatrixMultiplicationWithForShared(float** firstMatrix, float** secondMatrix, float** targetMatrix, int n, const int blockSize) {
-	int i = threadIdx.x;
-	int j = threadIdx.y;
-	__shared__ float sharedMemory[blockSize];
-	for (int k = 0; k < n; k++) {
-		targetMatrix[i][j] += firstMatrix[i][k] * secondMatrix[k][j];
-	}
-}
+//__global__ void deviceMatrixMultiplicationWithForShared(float** firstMatrix, float** secondMatrix, float** targetMatrix, int n, const int blockSize) {
+//	int i = threadIdx.x;
+//	int j = threadIdx.y;
+//	__shared__ float sharedMemory[blockSize];
+//	for (int k = 0; k < n; k++) {
+//		targetMatrix[i][j] += firstMatrix[i][k] * secondMatrix[k][j];
+//	}
+//}
 
 __global__ void deviceMatrixMultiplicationWithFor(float** firstMatrix, float** secondMatrix, float** targetMatrix, int n) {
 	int i = threadIdx.x;
