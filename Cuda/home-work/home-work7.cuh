@@ -1,4 +1,4 @@
-#ifndef homeswork7_def
+#ifndef homework7_def
 #define homework7_def
 
 int homeWork7();

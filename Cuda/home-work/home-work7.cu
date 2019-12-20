@@ -18,7 +18,6 @@
 
 using namespace std;
 
-
 __global__ void deviceVectorRateWithShared(float** firstMatrix, float* target) {
 	int threadId = threadIdx.x;
 	int vectorId = blockIdx.x * blockDim.x + threadId;

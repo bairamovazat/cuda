@@ -44,6 +44,9 @@
     <CudaCompile Include="home-work\home-work7.cu">
       <Filter>home</Filter>
     </CudaCompile>
+    <CudaCompile Include="home-work\home-work8.cu">
+      <Filter>home</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="class\class-work1.cuh">
@@ -89,6 +92,9 @@
       <Filter>model</Filter>
     </ClInclude>
     <ClInclude Include="home-work\home-work7.cuh">
+      <Filter>home</Filter>
+    </ClInclude>
+    <ClInclude Include="home-work\home-work8.cuh">
       <Filter>home</Filter>
     </ClInclude>
   </ItemGroup>

@@ -85,6 +85,7 @@
     <CudaCompile Include="class\class-work4.cu" />
     <CudaCompile Include="class\class-work5.cu" />
     <CudaCompile Include="home-work\home-work7.cu" />
+    <CudaCompile Include="home-work\home-work8.cu" />
     <CudaCompile Include="utils\cuda_utils.cu" />
     <CudaCompile Include="example\example5.cu" />
     <CudaCompile Include="example\example1.cu" />
@@ -102,6 +103,7 @@
     <ClInclude Include="class\class-work4.cuh" />
     <ClInclude Include="class\class-work5.cuh" />
     <ClInclude Include="home-work\home-work7.cuh" />
+    <ClInclude Include="home-work\home-work8.cuh" />
     <ClInclude Include="utils\cuda_utils.cuh" />
     <ClInclude Include="example\example5.cuh" />
     <ClInclude Include="example\example1.cuh" />
